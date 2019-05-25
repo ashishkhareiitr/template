@@ -1,0 +1,120 @@
+sapply(temp,function(x) dim(x))
+do.call("dim",temp)
+
+> setdiff(colnames(train.data),datatype$FeatureName)
+[1] "V1"
+> head(colnames(train.data))
+[1] "V1"          "patient_id"  "Valid_Index" "AED"         "aed_days"    "BRV"        
+> datatype[grep(pattern = "Valid_Index",x = datatype$FeatureName)]
+   FeatureName Type
+1: Valid_Index date
+> unique(datatype$Type)
+[1] "numeric"     "date"        "categorical"
+> datatype[grep(pattern = "Valid_Index",x = datatype$FeatureName),"Type"] <- "string"
+
+#colnames(train.h2o)[h2o.columns_by_type(object = train.h2o,coltype = "string")]
+#grep(pattern = "AED",x = colnames(train.h2o)[h2o.columns_by_type(object = train.h2o,coltype = "string")])
+
+train.h2o[,(cat_var) := lapply(.SD, as.factor), .SDcols = cat_var]
+test.h2o[,(test.cat.var) := lapply(.SD, as.factor), .SDcols = test.cat.var]
+
+x[] <- lapply(train.h2o,is.character)
+col_names <- names(x)
+
+character_vars <- lapply(train.h2o, class) == "character"
+train.h2o[, character_vars] <- lapply(train.h2o[, character_vars], as.factor)
+
+dim(character_vars)
+
+library(dplyr)
+
+# all character columns to factor:
+df <- mutate_if(train.h2o, is.character, as.factor)
+
+cat_var <- names(train.h2o)[which(sapply(train.h2o, is.character))]
+train.numeric.var <- names(train.h2o)[which(sapply(train.h2o, is.numeric))]
+
+test.cat.var <- names(test.h2o)[which(sapply(test.h2o, is.character))]
+test.numeric.var <- names(test.h2o)[which(sapply(test.h2o, is.numeric))]
+ 
+
+catfeatures <- datatype[datatype$Type %like% "categorical","FeatureName"]
+
+catfeatures <- intersect(colnames(train.h2o),catfeatures$FeatureName)
+
+train.h2o[catfeatures] <- h2o.asfactor(train.h2o[catfeatures])
+
+test.h2o[catfeatures] <- h2o.asfactor(test.h2o[catfeatures]) 
+
+
+levels(df$column) <- c(levels(df$column), newFactorLevel)
+
+
+new.levels <- c("0", "1")
+train.h2o$RTG <- h2o.setLevels(train.h2o$RTG, new.levels, in.place = FALSE)
+
+
+dim(train.h2o)
+
+const <- ConstFactorColumns(train.h2o,0.99)
+
+length(colnames(train.h2o)[h2o.columns_by_type(object = train.h2o,coltype = "numeric")])
+length(colnames(train.h2o)[h2o.columns_by_type(object = train.h2o,coltype = "string")])
+
+colnames(train.h2o)[h2o.columns_by_type(object = train.h2o,coltype = "string")][grep(pattern = "Outcome_variable",x = colnames(train.h2o)[h2o.columns_by_type(object = train.h2o,coltype = "string")])]
+h2o.levels(train.h2o["Outcome_variable"])
+dim(test.h2o)
+
+grep(pattern= "LE180_Diagnostic_proc_on_nose_mouth_and_pharynx",x= colnames(train.h2o))
+
+h2o.levels(train.h2o["LE180_Diagnostic_proc_on_nose_mouth_and_pharynx"])
+
+ncol(train.h2o)
+nrow(train.h2o)
+nrow(test.h2o)
+length(predictors)
+colnames(predictors)
+
+
+```{r}
+# convert characters to categorical
+dim(train.h2o)
+names(train.h2o[,(h2o.columns_by_type(object = train.h2o,coltype = "categorical"))])
+train.h2o[,(h2o.columns_by_type(object = train.h2o,coltype = "string"))]<-as.factor((train.h2o[,(h2o.columns_by_type(object = train.h2o,coltype = "string"))]))
+
+dim(test.h2o)
+names(test.h2o[,(h2o.columns_by_type(object = test.h2o,coltype = "categorical"))])
+test.h2o[,(h2o.columns_by_type(object = test.h2o,coltype = "string"))]<-as.factor((test.h2o[,(h2o.columns_by_type(object = test.h2o,coltype = "string"))]))
+
+catfeatures <- datatype[datatype$Type %like% "categorical","FeatureName"]
+
+catfeatures <- intersect(colnames(train.h2o),catfeatures)
+
+train.h2o[catfeatures] <- h2o.asfactor(train.h2o[catfeatures])
+
+test.h2o[catfeatures] <- h2o.asfactor(test.h2o[catfeatures]) 
+
+```
+```{r}
+#SUBSTABUSE, RTG, VPA, BRV, PRM, PTN, FBM, TPM, RFM, last_trt_had_PTN, CBZ, last_trt_had_VPA, ESM, ZNS, ESL, PBT, last_trt_had_LTG, PGB, #isInChildbearingAge, LAC, VGB, EZG, Last_AED, CLB, SEIZURE345OR78039, LEV, PER, ETN, LTG, DVP, OXG
+
+#colnames(train.h2o)[h2o.columns_by_type(object = train.h2o,coltype = "string")]
+#grep(pattern = "AED",x = colnames(train.h2o)[h2o.columns_by_type(object = train.h2o,coltype = "string")])
+```
+
+#subset(varimptab_final,varimptab_final$variable=="Age")
+subset(varimptab_final,varimptab_final$variable=="USP_") 
+filter(varimptab_final,varimptab_final$variable=="USP_")
+varimptab_final[,c(1,3,4)]
+h2o.coef_norm(object=best_gbm)
+h2o.varimp_plot(best_gbm, num_of_features = 10)
+
+
+boston.file = "TDS-AED_SHA_C3_Features_BostonRegion.csv"
+
+boston.xdata <- fread(input = file.path(data.fileloc,boston.file),header = TRUE)
+
+xdata %>% inner_join(boston.xdata,by="patient_id")
+
+
+xdata <- xdata %>% filter( xdata$patient_id %in% c(boston.xdata$patient_id) )
